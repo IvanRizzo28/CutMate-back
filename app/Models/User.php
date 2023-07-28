@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public function shops(){
+        return $this->belongsToMany(Shop::class)->withTimestamps();
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -19,7 +23,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',
         'email',
+        'telephone',
         'password',
     ];
 

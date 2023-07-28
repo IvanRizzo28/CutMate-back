@@ -23,7 +23,7 @@ class UserController extends Controller
         } else if (!isset($data['remember'])) $rem=false;
         unset($data['remember']);
 
-        if (!Auth::attempt($data, $rem)){
+        if (!Auth::attempt($data, /*$rem*/false)){
             /*return response()->json([
                 'message' => 'Credenziali errate'
             ],422);*/
@@ -42,10 +42,11 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'email' => 'required|max:70|min:5|unique:users,email',
+            'email' => 'required|max:70|unique:users,email',
             'password' => 'required|string|max:20|min:5',
             'name' => 'required|string|max:50',
-            'surname' => 'required|string|max:50'
+            'surname' => 'required|string|max:50',
+            'telephone' => 'required|max:15'
         ]);
 
         $data=$request->all();
@@ -54,7 +55,8 @@ class UserController extends Controller
             'name' => $data['name'],
             'surname' => $data['surname'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password'])
+            'telephone' => $data['telephone'],
+            'password' => bcrypt($data['password']),
         ]);
         $token=$newUser->createToken('APIToken')->plainTextToken;
 

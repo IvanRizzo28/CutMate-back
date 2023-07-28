@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('shop_id')->constrained()->cascadeOnDelete();
             $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
             $table->foreignId('service_id')->constrained()->cascadeOnDelete();
             $table->date('date');
-            $table->primary(['user_id','employee_id','service_id','date']);
+            $table->primary(['user_id','shop_id','employee_id','service_id','date']);
             $table->smallInteger('index'); //es. 200,30,50,150,...
             $table->timestamps();
         });
