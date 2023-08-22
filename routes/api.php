@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AcceptanceController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ClosingController;
 use App\Http\Controllers\Api\DayController;
@@ -38,6 +39,9 @@ Route::middleware('auth:sanctum')->get('/user', function () {
 //shops
 Route::middleware('auth:sanctum')->get('/shops', [ShopController::class, 'index']);
 Route::middleware('auth:sanctum')->get('/shop/{id}', [ShopController::class, 'show']);
+
+//acceptance
+Route::middleware('auth:sanctum')->get('/acceptance/{idShop}', [AcceptanceController::class, 'create']);
 
 //employees
 Route::middleware('auth:sanctum')->get('/employees/{idShop}', [EmployeeController::class, 'idShop']);

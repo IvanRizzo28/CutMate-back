@@ -45,6 +45,7 @@ class BookingController extends Controller
         //controllo per vedere se effettivamente c'è lo spazio libero per la prenotazione
         $controller=new HourController();
         $arrayOrari=$controller->controll($data['shop_id'], $data['date'], $data['employee_id']);
+        if (!is_array($arrayOrari)) return abort(401, $arrayOrari);
         if($data['index'] <= 288 - $controllo2->time && $arrayOrari[$data['index']] == 0){
             $count=$data['index'];
             while($count<$data['index'] + $controllo2->time){
