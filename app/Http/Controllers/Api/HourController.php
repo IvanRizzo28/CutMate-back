@@ -68,9 +68,49 @@ class HourController extends Controller
         }
     }
 
-    public function idShopDate($idShop, $date, $idEmployee)
+    public function controll($idShop, $date, $idEmployee)
     {
         $dataOdierna = Carbon::now();
+
+        if ($date >= $dataOdierna->format('Y-m-d')) {
+            //query per vedere se esiste nella tabella days lo shop per la specifica data
+            $open = Day::join('shops', 'shops.id', 'days.shop_id')
+                ->where('days.date', $date)
+                ->select('days.*')
+                ->first();
+
+            //se esiste ed è aperto allora si ritornano gli orari
+            if ($open && $open['is_close'] == 0) {
+                $this->getHours($idShop, $date, $idEmployee);
+
+                return $this->arrayOrari;
+            } else if ($open && $open['is_close'] == 1) return 'Chiuso';
+            else {
+                //se non esiste si va a controllare nella tabella closings se c'è un giorno di chiusura corrispondente, se si trova si ritorna un errore
+                $tmp = Carbon::createFromFormat('Y-m-d', $date);
+                $tmp->locale('it')->shortDayName;
+                $closing = Closing::join('shops', 'shops.id', 'closings.shop_id')
+                    ->where('closings.day', $this->dayWeek[$tmp->dayOfWeek])
+                    ->first();
+
+                if (!$closing) {
+                    $this->getHours($idShop, $date, $idEmployee);
+
+                    return $this->arrayOrari;
+                } else return 'Chiuso';
+            }
+        } else return 'Errore';
+    }
+
+    public function idShopDate($idShop, $date, $idEmployee)
+    {
+        $check = $this->controll($idShop, $date, $idEmployee);
+        if (is_array($check)) return response()->json(['data' => $check], 200);
+        return abort(401, $check);
+    }
+
+    //----------------------------------Parte del codice che prima stava all'interno di idShopDate------------------------------------------------------------
+    /*$dataOdierna = Carbon::now();
 
         if ($date >= $dataOdierna->format('Y-m-d')) {
             //query per vedere se esiste nella tabella days lo shop per la specifica data
@@ -103,6 +143,5 @@ class HourController extends Controller
                     ], 200);
                 } else return abort(401, 'Chiuso');
             }
-        } else return abort(401, 'Errore');
-    }
+        } else return abort(401, 'Errore');*/
 }
